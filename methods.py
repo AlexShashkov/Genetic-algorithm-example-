@@ -1,55 +1,27 @@
 ﻿import random
 import numpy as np
 
-from matplotlib import pyplot as plt
-
 dictionary = None
 
-def genetic(x, y, max_offsprings, max_selection, mode='txt', size=None):
+def genetic(x, y, max_offsprings, max_selection, iteration, mode='txt'):
     loadDict(mode, x, y)
     progeny = int(max_offsprings/max_selection)
-    iteration = 0
-    x, y = strLenCheck(x, y, mode)
-    difference = compare(x, y)
-    offsprings = {}
-    while difference > 0:
-        if iteration != 0:
-            parents = offsprings.copy()
-            offsprings = {}
-            for parent in parents:
-                if mode == 'gray':
-                    parent = np.asarray(parent)
-                offsprings.update(createOffsprings(parent, y, progeny, mode))
-            offsprings, difference = selection(offsprings, max_selection)
-        else:
-            offsprings = createOffsprings(x, y, max_offsprings, mode)
-            offsprings, difference = selection(offsprings, max_selection)
+    if iteration != 0:
+        parents = x.copy()
+        offsprings = {}
+        for i in range(len(parents)):
+            if mode == 'gray':
+                parents[i] = np.asarray(parents[i])
+            offsprings.update(createOffsprings(parents[i], y, progeny, mode))
+        offsprings, difference = selection(offsprings, max_selection)
+    else:
+        x, y = strLenCheck(x, y, mode)
+        difference = compare(x, y)
+        offsprings = {}
+        offsprings = createOffsprings(x, y, max_offsprings, mode)
+        offsprings, difference = selection(offsprings, max_selection)
             
-        if len(offsprings[0]) > 100:
-            print(f'Iteration #{iteration+1}, min string difference - {difference} from \'{offsprings[0][:100]}...\'')
-        else:
-            print(f'Iteration #{iteration+1}, min string difference - {difference} from \'{offsprings[0]}\'')
-        if mode == 'gray':
-            plt.ion()
-            plot((offsprings[0], y), ('Input', 'Original'), size)
-
-        iteration += 1
-    print(f'Got {offsprings[0]}, original string - {y}')
-
-def plot(X, xlabel, size):
-    plt.figure(1)
-    for i in range(len(X)):
-        plt.subplot(1, 2, i+1)
-        plt.xlabel(xlabel[i])
-        a = None
-        if type(X[i]) == tuple:
-            a = np.asarray(X[i]).reshape(size)
-        else:
-            a = X[i].reshape(size)
-        print(a.shape)
-        plt.imshow(a, cmap='gray', vmin=0, vmax=255)
-    plt.show()
-    plt.pause(0.001)
+    return offsprings, difference
 
 def loadDict(mode, x, y):
     global dictionary
