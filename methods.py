@@ -46,9 +46,7 @@ def loadDict(mode, x, y):
         if any(symbol in [etc[i] for i in range(len(etc))] for symbol in x) or any(symbol in [etc[i] for i in range(len(etc))] for symbol in y):
             dictionary += etc
     elif mode == 'gray':
-        dictionary = []
-        for i in range(256):
-            dictionary.append(i)
+        dictionary = np.concatenate((np.unique(x), np.unique(y)))
 
 
 def strLenCheck(x, y, mode):
